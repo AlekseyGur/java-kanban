@@ -52,23 +52,30 @@ public class Task {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Task other = (Task) obj;
         if (name == null) {
-            if (other.name != null)
+            if (other.name != null) {
                 return false;
-        } else if (!name.equals(other.name))
+            }
+        } else if (!name.equals(other.name)) {
             return false;
+        }
         if (text == null) {
-            if (other.text != null)
+            if (other.text != null) {
                 return false;
-        } else if (!text.equals(other.text))
+            }
+        } else if (!text.equals(other.text)) {
             return false;
+        }
         return true;
     }
 
