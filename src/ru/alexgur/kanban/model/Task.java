@@ -14,6 +14,10 @@ public class Task {
         id = ++globalId;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public Status getStatus() {
         return status;
     }
