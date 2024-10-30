@@ -1,5 +1,8 @@
 package ru.alexgur.kanban.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -227,6 +230,44 @@ public class Tests {
         Assertions.assertEquals("Описание Epic", epic.getText());
         Assertions.assertEquals(2, epic.getSubTasksIds().size());
     }
+
+    @Test
+    void addToHistory() {
+        TaskManager tm = Managers.getDefault();
+        HistoryManager hm = Managers.getDefaultHistory();
+        tm.setHistoryManager(hm);
+
+        Task task = new Task();
+        tm.addTask(task);
+        tm.getTask(task.id);
+        
+        final List<Task> history = hm.getHistory();
+        assertNotNull(history, "История не пустая.");
+        assertEquals(1, history.size(), "История не пустая.");
+    } 
+
+    @Test
+    void addNewTask() {
+        TaskManager tm = Managers.getDefault();
+        HistoryManager hm = Managers.getDefaultHistory();
+        tm.setHistoryManager(hm);
+
+        Task task = new Task();
+        task.setName("Название").setText("Описание");
+
+        final int taskId = tm.addTask(task);
+
+        final Task savedTask = tm.getTask(taskId);
+
+        assertNotNull(savedTask, "Задача не найдена.");
+        assertEquals(task, savedTask, "Задачи не совпадают.");
+
+        final List<Task> tasks = tm.getTasks();
+
+        assertNotNull(tasks, "Задачи не возвращаются.");
+        assertEquals(1, tasks.size(), "Неверное количество задач.");
+        assertEquals(task, tasks.get(0), "Задачи не совпадают.");
+    } 
 
     @Test
     public void shouldWorkAllTaskTogatherLikeInProduction() {
