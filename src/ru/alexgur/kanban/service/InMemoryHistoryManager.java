@@ -1,5 +1,6 @@
 package ru.alexgur.kanban.service;
 
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,8 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     private List<Task> getHistoryImpl() {
-        return history;
+        List<Task> res = history;
+        return List.copyOf(res);
     }
 
     private void clearImpl() {

@@ -52,7 +52,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int addTask(Task task) {
-        tasks.put(task.id, task);
+        tasks.put(task.id, task); // уникальность public final int id гарантируется для каждого Task с помощью private static int globalId и отсуствием метода setId()
         return task.id;
     }
 
@@ -102,6 +102,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteSubTasks() {
+        for (Epic epic : epics.values()) {
+            for (SubTask subTask : subTasks.values()) {
+                epic.deleteSubTask(subTask.getId());
+            }
+            updateEpicStatus(epic.getId());
+        }
         subTasks.clear();
     }
 
