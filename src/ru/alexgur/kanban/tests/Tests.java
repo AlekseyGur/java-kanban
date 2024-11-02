@@ -441,14 +441,6 @@ public class Tests {
         }
     }
 
-    private Task createTask(TaskManager tm, String name, String text) {
-        Task t = new Task();
-        t.setName(name);
-        t.setText(text);
-        tm.addTask(t);
-        return t;
-    }
-
     private Epic createEpic(TaskManager tm, String name, String text, String[][] subTaskInfo) {
         Epic epic = new Epic();
         epic.setName(name).setText(text);
