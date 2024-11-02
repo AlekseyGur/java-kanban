@@ -21,6 +21,10 @@ public class Epic extends Task {
         this.subTasksIds = subTasksIdsFiltered;
     }
 
+    public void deleteSubTasks() {
+        subTasksIds.clear();
+    }
+
     public void deleteSubTask(Integer subTasksId) {
         subTasksIds.remove(subTasksId);
     }

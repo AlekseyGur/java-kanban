@@ -1,6 +1,5 @@
 package ru.alexgur.kanban.service;
 
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +8,23 @@ import ru.alexgur.kanban.model.Task;
 public class InMemoryHistoryManager implements HistoryManager {
 
     public static final int HISTORY_MAX_SIZE = 10;
+
     private ArrayList<Task> history = new ArrayList<>();
+
+    @Override
+    public void clear() {
+        clearImpl();
+    }
+
+    @Override
+    public void add(Task task) {
+        addImpl(task);
+    }
+
+    @Override
+    public List<Task> getHistory() {
+        return getHistoryImpl();
+    }
 
     private void addImpl(Task task) {
         if (task != null) {
@@ -27,21 +42,6 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     private void clearImpl() {
         history.clear();
-    }
-
-    @Override
-    public void clear() {
-        clearImpl();
-    }
-
-    @Override
-    public void add(Task task) {
-        addImpl(task);
-    }
-
-    @Override
-    public List<Task> getHistory() {
-        return getHistoryImpl();
     }
 
 }

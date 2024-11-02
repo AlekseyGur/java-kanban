@@ -9,11 +9,11 @@ import ru.alexgur.kanban.model.SubTask;
 import ru.alexgur.kanban.model.Task;
 
 public class InMemoryTaskManager implements TaskManager {
+    
     // Ключ хеша совпадает с Task.id, используется для быстрого поиска
     private HashMap<Integer, Task> tasks = new HashMap<>();
     private HashMap<Integer, SubTask> subTasks = new HashMap<>();
     private HashMap<Integer, Epic> epics = new HashMap<>();
-
     private HistoryManager history;
 
     public void setHistoryManager(HistoryManager manager) {
@@ -24,35 +24,9 @@ public class InMemoryTaskManager implements TaskManager {
         return history;
     }
 
-    private void clearTask(int id) {
-        if (tasks.containsKey(id)) {
-            tasks.remove(id);
-        }
-    }
-
-    private void clearSubTask(int id) {
-        if (subTasks.containsKey(id)) {
-            SubTask sub = subTasks.remove(id);
-            int epicId = sub.getEpicId();
-
-            if (epics.containsKey(epicId)) {
-                Epic epic = getEpic(epicId);
-                epic.deleteSubTask(id);
-                updateEpicStatus(epicId);
-            }
-        }
-    }
-
-    private void clearEpic(int id) {
-        Epic epic = epics.remove(id);
-        for (Integer sid : epic.getSubTasksIds()) {
-            clearSubTask(sid);
-        }
-    }
-
     @Override
     public int addTask(Task task) {
-        tasks.put(task.id, task); // уникальность public final int id гарантируется для каждого Task с помощью private static int globalId и отсуствием метода setId()
+        tasks.put(task.id, task);
         return task.id;
     }
 
@@ -103,9 +77,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteSubTasks() {
         for (Epic epic : epics.values()) {
-            for (SubTask subTask : subTasks.values()) {
-                epic.deleteSubTask(subTask.getId());
-            }
+            epic.deleteSubTasks();
             updateEpicStatus(epic.getId());
         }
         subTasks.clear();
@@ -207,6 +179,32 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         epic.setStatus(newStatus);
+    }
+
+    private void clearTask(int id) {
+        if (tasks.containsKey(id)) {
+            tasks.remove(id);
+        }
+    }
+
+    private void clearSubTask(int id) {
+        if (subTasks.containsKey(id)) {
+            SubTask sub = subTasks.remove(id);
+            int epicId = sub.getEpicId();
+
+            if (epics.containsKey(epicId)) {
+                Epic epic = getEpic(epicId);
+                epic.deleteSubTask(id);
+                updateEpicStatus(epicId);
+            }
+        }
+    }
+
+    private void clearEpic(int id) {
+        Epic epic = epics.remove(id);
+        for (Integer sid : epic.getSubTasksIds()) {
+            clearSubTask(sid);
+        }
     }
 
 }
