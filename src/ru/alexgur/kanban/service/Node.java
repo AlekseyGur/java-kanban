@@ -11,7 +11,7 @@ public class Node {
         this.task = task;
         this.next = next;
         this.prev = prev;
-    } 
+    }
 
     @Override
     public int hashCode() {
