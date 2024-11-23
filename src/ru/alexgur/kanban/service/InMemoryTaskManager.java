@@ -166,7 +166,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         Status newStatus;
-        if (isNew) { 
+        if (isNew) {
             // все подзадачи имеют статус NEW или их нет
             newStatus = Status.NEW;
         } else if (isDone) {

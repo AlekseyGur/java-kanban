@@ -297,7 +297,7 @@ public class Tests {
         tm.addSubTask(subTask3);
         hist = tm.getHistoryManager().getHistory();
         assertEquals(hist.size(), 0, "При создании подзадачи история просмотров не должна изменяться.");
-        
+
         task1.setName("Название1").setText("Описание1");
         hist = tm.getHistoryManager().getHistory();
         assertEquals(hist.size(), 0, "При изменении параметров задачи история просмотров не должна изменяться.");
@@ -340,20 +340,20 @@ public class Tests {
         tm.getTask(task1.id);
         hist = tm.getHistoryManager().getHistory();
         assertTrue(hist.get(0).equals(task1));
-        assertTrue(hist.size()==1);
+        assertTrue(hist.size() == 1);
 
         tm.getTask(task2.id);
         hist = tm.getHistoryManager().getHistory();
         assertTrue(hist.get(0).equals(task2));
         assertTrue(hist.get(1).equals(task1));
-        assertTrue(hist.size()==2);
+        assertTrue(hist.size() == 2);
 
         clearHistory();
 
         tm.getTask(task2.id);
         hist = tm.getHistoryManager().getHistory();
         assertTrue(hist.get(0).equals(task2));
-        assertTrue(hist.size()==1);
+        assertTrue(hist.size() == 1);
 
         tm.getTask(task1.id);
         hist = tm.getHistoryManager().getHistory();
