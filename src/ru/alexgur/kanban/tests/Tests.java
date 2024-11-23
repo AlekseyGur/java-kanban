@@ -2,6 +2,7 @@ package ru.alexgur.kanban.tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,6 @@ import ru.alexgur.kanban.model.Task;
 import ru.alexgur.kanban.service.Status;
 import ru.alexgur.kanban.service.TaskManager;
 import ru.alexgur.kanban.service.HistoryManager;
-import ru.alexgur.kanban.service.InMemoryHistoryManager;
 import ru.alexgur.kanban.service.Managers;
 
 import org.junit.jupiter.api.Test;
@@ -70,7 +70,7 @@ public class Tests {
     @Test
     public void shouldNotBePossibleToSetSubTaskAsItsOwnEpic() {
         SubTask subTask = new SubTask();
-        
+
         subTask.setEpicId(subTask.id);
 
         Assertions.assertNotEquals(subTask.id, subTask.getEpicId());
@@ -174,11 +174,11 @@ public class Tests {
         Assertions.assertEquals(1, hist.size());
     }
 
-    // проверка добавления в историю и чтения из неё ровно MAX элементов
+    // проверка добавления в историю и чтения из неё ровно 10 элементов
     @Test
-    public void shouldSaveAndReturnOneRecordsFromHistory() {
+    public void shouldSaveAndReturnTenRecordsFromHistory() {
         clearHistory();
-        int max_hist_size = InMemoryHistoryManager.HISTORY_MAX_SIZE;
+        int max_hist_size = 10;
 
         for (int i = 0; i < max_hist_size; i++) {
             Task task = new Task();
@@ -190,11 +190,11 @@ public class Tests {
         Assertions.assertTrue(max_hist_size == hist.size());
     }
 
-    // проверка добавления в историю и чтения из неё ровно MAX+1 элементов
+    // проверка добавления в историю и чтения из неё ровно 10+1 элементов
     @Test
-    public void shouldSaveAndReturnMaxPlusOneRecordFromHistory() {
+    public void shouldSaveAndReturnTenPlusOneRecordFromHistory() {
         clearHistory();
-        int max_hist_size = InMemoryHistoryManager.HISTORY_MAX_SIZE;
+        int max_hist_size = 10;
 
         for (int i = 0; i < max_hist_size + 1; i++) {
             Task task = new Task();
@@ -203,7 +203,7 @@ public class Tests {
         }
 
         List<Task> hist = tm.getHistoryManager().getHistory();
-        Assertions.assertTrue(max_hist_size == hist.size());
+        Assertions.assertTrue(max_hist_size + 1 == hist.size());
     }
 
     @Test
@@ -236,7 +236,7 @@ public class Tests {
 
         assertNotNull(history, "История не пустая.");
         assertEquals(1, history.size(), "История не пустая.");
-    } 
+    }
 
     @Test
     void addNewTask() {
@@ -251,9 +251,147 @@ public class Tests {
         assertNotNull(savedTask, "Задача не найдена.");
         assertEquals(task, savedTask, "Задачи не совпадают.");
         assertNotNull(tasks, "Задачи не возвращаются.");
-        assertEquals(taskSizeInit+1, tasks.size(), "Неверное количество задач.");
-        assertEquals(task, tasks.get(tasks.size()-1), "Задачи не совпадают.");
-    } 
+        assertEquals(taskSizeInit + 1, tasks.size(), "Неверное количество задач.");
+        assertEquals(task, tasks.get(tasks.size() - 1), "Задачи не совпадают.");
+    }
+
+    // Создайте две задачи, эпик с тремя подзадачами и эпик без подзадач.
+    // Запросите созданные задачи несколько раз в разном порядке.
+    // После каждого запроса выведите историю и убедитесь, что в ней нет повторов.
+    @Test
+    void shouldCreateTwoTasksAndOneEpicWithThreeSubtasksAndOneEptyEpic() {
+        clearHistory();
+        List<Task> hist = tm.getHistoryManager().getHistory();
+
+        Task task1 = new Task();
+        tm.addTask(task1);
+        hist = tm.getHistoryManager().getHistory();
+        assertEquals(hist.size(), 0, "При создании задачи история просмотров не должна изменяться.");
+
+        Task task2 = new Task();
+        tm.addTask(task2);
+        hist = tm.getHistoryManager().getHistory();
+        assertEquals(hist.size(), 0, "При создании задачи история просмотров не должна изменяться.");
+
+        Epic epic1 = new Epic();
+        tm.addEpic(epic1);
+        hist = tm.getHistoryManager().getHistory();
+        assertEquals(hist.size(), 0, "При создании эпик задачи история просмотров не должна изменяться.");
+
+        Epic epic2 = new Epic();
+        tm.addEpic(epic2);
+        hist = tm.getHistoryManager().getHistory();
+        assertEquals(hist.size(), 0, "При создании эпик задачи история просмотров не должна изменяться.");
+
+        SubTask subTask1 = new SubTask();
+        tm.addSubTask(subTask1);
+        hist = tm.getHistoryManager().getHistory();
+        assertEquals(hist.size(), 0, "При создании подзадачи история просмотров не должна изменяться.");
+
+        SubTask subTask2 = new SubTask();
+        tm.addSubTask(subTask2);
+        hist = tm.getHistoryManager().getHistory();
+        assertEquals(hist.size(), 0, "При создании подзадачи история просмотров не должна изменяться.");
+
+        SubTask subTask3 = new SubTask();
+        tm.addSubTask(subTask3);
+        hist = tm.getHistoryManager().getHistory();
+        assertEquals(hist.size(), 0, "При создании подзадачи история просмотров не должна изменяться.");
+
+        task1.setName("Название1").setText("Описание1");
+        hist = tm.getHistoryManager().getHistory();
+        assertEquals(hist.size(), 0, "При изменении параметров задачи история просмотров не должна изменяться.");
+
+        task2.setName("Название2").setText("Описание2");
+        hist = tm.getHistoryManager().getHistory();
+        assertEquals(hist.size(), 0, "При изменении параметров задачи история просмотров не должна изменяться.");
+
+        epic1.setName("Название Epic 1").setText("Описание Epic 1");
+        hist = tm.getHistoryManager().getHistory();
+        assertEquals(hist.size(), 0, "При изменении параметров эпик задачи история просмотров не должна изменяться.");
+
+        epic2.setName("Название Epic 2").setText("Описание Epic 2");
+        hist = tm.getHistoryManager().getHistory();
+        assertEquals(hist.size(), 0, "При изменении параметров эпик задачи история просмотров не должна изменяться.");
+
+        subTask1.setName("Название SubTask 1").setText("Описание SubTask 1");
+        hist = tm.getHistoryManager().getHistory();
+        assertEquals(hist.size(), 0, "При изменении параметров подзадачи история просмотров не должна изменяться.");
+
+        subTask2.setName("Название SubTask 2").setText("Описание SubTask 2");
+        hist = tm.getHistoryManager().getHistory();
+        assertEquals(hist.size(), 0, "При изменении параметров подзадачи история просмотров не должна изменяться.");
+
+        subTask3.setName("Название SubTask 3").setText("Описание SubTask 3");
+        hist = tm.getHistoryManager().getHistory();
+        assertEquals(hist.size(), 0, "При изменении параметров подзадачи история просмотров не должна изменяться.");
+
+        List<Integer> sbtasks_ids = new ArrayList<>();
+        sbtasks_ids.add(subTask1.id);
+        sbtasks_ids.add(subTask2.id);
+        sbtasks_ids.add(subTask3.id);
+        epic1.setSubTasksIds(sbtasks_ids);
+        subTask1.setEpicId(epic1.id);
+        subTask2.setEpicId(epic1.id);
+        subTask3.setEpicId(epic1.id);
+        hist = tm.getHistoryManager().getHistory();
+        assertEquals(hist.size(), 0, "При добавлении подзадачи к эпику история просмотров не должна изменяться.");
+
+        tm.getTask(task1.id);
+        hist = tm.getHistoryManager().getHistory();
+        assertTrue(hist.get(0).equals(task1));
+        assertTrue(hist.size() == 1);
+
+        tm.getTask(task2.id);
+        hist = tm.getHistoryManager().getHistory();
+        assertTrue(hist.get(0).equals(task2));
+        assertTrue(hist.get(1).equals(task1));
+        assertTrue(hist.size() == 2);
+
+        clearHistory();
+
+        tm.getTask(task2.id);
+        hist = tm.getHistoryManager().getHistory();
+        assertTrue(hist.get(0).equals(task2));
+        assertTrue(hist.size() == 1);
+
+        tm.getTask(task1.id);
+        hist = tm.getHistoryManager().getHistory();
+        assertTrue(hist.get(0).equals(task1));
+        assertTrue(hist.get(1).equals(task2));
+        assertTrue(hist.size() == 2);
+
+        clearHistory();
+
+        tm.getTask(task1.id);
+        tm.getTask(task2.id);
+        tm.getTask(task1.id);
+        hist = tm.getHistoryManager().getHistory();
+        assertTrue(hist.get(0).equals(task1));
+        assertTrue(hist.get(1).equals(task2));
+        assertTrue(hist.size() == 2);
+
+        clearHistory();
+
+        tm.getTask(task1.id);
+        tm.getTask(task2.id);
+        tm.getTask(task1.id);
+        tm.getEpic(epic2.id);
+        tm.getSubTask(subTask2.id);
+        tm.getSubTask(subTask1.id);
+        tm.getEpic(epic1.id);
+        tm.getTask(task1.id);
+        tm.getEpic(epic2.id);
+        hist = tm.getHistoryManager().getHistory();
+
+        assertTrue(hist.get(0).equals(epic2));
+        assertTrue(hist.get(1).equals(task1));
+        assertTrue(hist.get(2).equals(epic1));
+        assertTrue(hist.get(3).equals(subTask1));
+        assertTrue(hist.get(4).equals(subTask2));
+        assertTrue(hist.get(5).equals(task2));
+        assertTrue(hist.size() == 6);
+    }
 
     @Test
     public void shouldWorkAllTaskTogatherLikeInProduction() {
