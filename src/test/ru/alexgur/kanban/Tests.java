@@ -1,4 +1,4 @@
-package tests.ru.alexgur.kanban;
+package test.ru.alexgur.kanban;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
