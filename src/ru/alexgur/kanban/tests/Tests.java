@@ -58,10 +58,10 @@ public class Tests {
     @Test
     public void shouldNotBePossibleToAddEpicAsSubTask() {
         Epic epic = new Epic();
-        List<Integer> sbtasks_ids = new ArrayList<>();
+        List<Integer> sbTasksIds = new ArrayList<>();
 
-        sbtasks_ids.add(epic.id);
-        epic.setSubTasksIds(sbtasks_ids);
+        sbTasksIds.add(epic.id);
+        epic.setSubTasksIds(sbTasksIds);
 
         Assertions.assertEquals(0, epic.getSubTasksIds().size());
     }
@@ -178,32 +178,32 @@ public class Tests {
     @Test
     public void shouldSaveAndReturnTenRecordsFromHistory() {
         clearHistory();
-        int max_hist_size = 10;
+        int maxHistSize = 10;
 
-        for (int i = 0; i < max_hist_size; i++) {
+        for (int i = 0; i < maxHistSize; i++) {
             Task task = new Task();
             tm.addTask(task);
             tm.getTask(task.id);
         }
         List<Task> hist = tm.getHistoryManager().getHistory();
 
-        Assertions.assertTrue(max_hist_size == hist.size());
+        Assertions.assertTrue(maxHistSize == hist.size());
     }
 
     // проверка добавления в историю и чтения из неё ровно 10+1 элементов
     @Test
     public void shouldSaveAndReturnTenPlusOneRecordFromHistory() {
         clearHistory();
-        int max_hist_size = 10;
+        int maxHistSize = 10;
 
-        for (int i = 0; i < max_hist_size + 1; i++) {
+        for (int i = 0; i < maxHistSize + 1; i++) {
             Task task = new Task();
             tm.addTask(task);
             tm.getTask(task.id);
         }
 
         List<Task> hist = tm.getHistoryManager().getHistory();
-        Assertions.assertTrue(max_hist_size + 1 == hist.size());
+        Assertions.assertTrue(maxHistSize + 1 == hist.size());
     }
 
     @Test
@@ -211,14 +211,14 @@ public class Tests {
         Epic epic = new Epic();
         SubTask subTask1 = new SubTask();
         SubTask subTask2 = new SubTask();
-        List<Integer> sbtasks_ids = new ArrayList<>();
+        List<Integer> sbTasksIds = new ArrayList<>();
 
         epic.setName("Название Epic").setText("Описание Epic");
         subTask1.setName("Название SubTask").setText("Описание SubTask");
         subTask2.setName("Название SubTask").setText("Описание SubTask");
-        sbtasks_ids.add(subTask1.id);
-        sbtasks_ids.add(subTask2.id);
-        epic.setSubTasksIds(sbtasks_ids);
+        sbTasksIds.add(subTask1.id);
+        sbTasksIds.add(subTask2.id);
+        epic.setSubTasksIds(sbTasksIds);
 
         Assertions.assertEquals("Название Epic", epic.getName());
         Assertions.assertEquals("Описание Epic", epic.getText());
@@ -326,11 +326,11 @@ public class Tests {
         hist = tm.getHistoryManager().getHistory();
         assertEquals(hist.size(), 0, "При изменении параметров подзадачи история просмотров не должна изменяться.");
 
-        List<Integer> sbtasks_ids = new ArrayList<>();
-        sbtasks_ids.add(subTask1.id);
-        sbtasks_ids.add(subTask2.id);
-        sbtasks_ids.add(subTask3.id);
-        epic1.setSubTasksIds(sbtasks_ids);
+        List<Integer> sbTasksIds = new ArrayList<>();
+        sbTasksIds.add(subTask1.id);
+        sbTasksIds.add(subTask2.id);
+        sbTasksIds.add(subTask3.id);
+        epic1.setSubTasksIds(sbTasksIds);
         subTask1.setEpicId(epic1.id);
         subTask2.setEpicId(epic1.id);
         subTask3.setEpicId(epic1.id);
@@ -449,9 +449,9 @@ public class Tests {
 
         // Удалим одну задачу из эпика
         List<SubTask> st = tm.getEpicSubTasks(epic1.id);
-        int st_size = st.size();
+        int stSize = st.size();
         tm.deleteSubTask(st.get(0).id);
-        Assertions.assertTrue(tm.getEpicSubTasks(epic1.id).size() == --st_size);
+        Assertions.assertTrue(tm.getEpicSubTasks(epic1.id).size() == --stSize);
 
         // Удаляем один эпик
         tm.deleteEpic(epic2.id);
@@ -539,11 +539,11 @@ public class Tests {
 
         // Удалим одну задачу из эпика
         List<SubTask> st = tm.getEpicSubTasks(epic1.id);
-        int st_size = st.size();
+        int stSize = st.size();
         tm.deleteSubTask(st.get(0).id);
-        if (tm.getEpicSubTasks(epic1.id).size() == --st_size)
+        if (tm.getEpicSubTasks(epic1.id).size() == --stSize)
             System.out
-                    .println("✅ - Успешно удалена задача из эпика. В эпике осталось " + st_size + " задач. Все верно.");
+                    .println("✅ - Успешно удалена задача из эпика. В эпике осталось " + stSize + " задач. Все верно.");
         else
             System.out.println("❌ - Ошибка удаления задачи из эпика");
 
@@ -583,16 +583,16 @@ public class Tests {
         Epic epic = new Epic();
         epic.setName(name).setText(text);
 
-        List<Integer> sbtasks_ids = new ArrayList<>();
+        List<Integer> sbTasksIds = new ArrayList<>();
         for (String[] pair : subTaskInfo) {
             SubTask st = new SubTask();
             st.setEpicId(epic.id);
             st.setName(pair[0]);
             st.setText(pair[1]);
-            int st_id = tm.addSubTask(st);
-            sbtasks_ids.add(st_id);
+            int stId = tm.addSubTask(st);
+            sbTasksIds.add(stId);
         }
-        epic.setSubTasksIds(sbtasks_ids);
+        epic.setSubTasksIds(sbTasksIds);
 
         tm.addEpic(epic);
 
