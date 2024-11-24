@@ -604,26 +604,6 @@ public class Tests {
         }
     }
 
-    private Epic createEpic(TaskManager tm, String name, String text, String[][] subTaskInfo) {
-        Epic epic = new Epic();
-        epic.setName(name).setText(text);
-
-        List<Integer> sbTasksIds = new ArrayList<>();
-        for (String[] pair : subTaskInfo) {
-            SubTask st = new SubTask();
-            st.setEpicId(epic.id);
-            st.setName(pair[0]);
-            st.setText(pair[1]);
-            int stId = tm.addSubTask(st);
-            sbTasksIds.add(stId);
-        }
-        epic.setSubTasksIds(sbTasksIds);
-
-        tm.addEpic(epic);
-
-        return epic;
-    }
-
     private void clearHistory() {
         tm.getHistoryManager().clear();
     }
