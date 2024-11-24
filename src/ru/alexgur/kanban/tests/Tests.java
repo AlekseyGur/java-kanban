@@ -397,21 +397,38 @@ public class Tests {
     public void shouldWorkAllTaskTogatherLikeInProduction() {
 
         // Создаём первую эпик задачу
-        String[][] subs1 = { { "Первая подзадача", "Собрать коробки" }, { "Втоаря подзадача", "Упаковать кошку" }
-        , { "Третья подзадача", "Сказать слова прощания" } };
-        Epic epic1 = createEpic(
-                tm,
-                "Переезд",
-                "Перва эпик задача",
-                subs1);
+        SubTask subTask1 = new SubTask();
+        SubTask subTask2 = new SubTask();
+        SubTask subTask3 = new SubTask();
+        Epic epic1 = new Epic();
+
+        tm.addSubTask(subTask1);
+        tm.addSubTask(subTask2);
+        tm.addSubTask(subTask3);
+        tm.addEpic(epic1);
+
+        subTask1.setName("Первая подзадача").setText("Собрать коробки");
+        subTask1.setName("Втоаря подзадача").setText("Упаковать кошку");
+        subTask1.setName("Третья подзадача").setText("Сказать слова прощания");
+        epic1.setName("Переезд").setText("Перва эпик задача");
+
+        epic1.setSubTasksIds(List.of(subTask1.id, subTask2.id, subTask3.id));
+        subTask1.setEpicId(epic1.id);
+        subTask2.setEpicId(epic1.id);
+        subTask3.setEpicId(epic1.id);
 
         // Создаём вторую эпик задачу
-        String[][] subs2 = { { "Небольшое дело", "закончить программу" } };
-        Epic epic2 = createEpic(
-                tm,
-                "Вторая эпик задача",
-                "Описание задачи",
-                subs2);
+        SubTask subTask4 = new SubTask();
+        Epic epic2 = new Epic();
+
+        tm.addSubTask(subTask4);
+        tm.addEpic(epic2);
+
+        subTask4.setName("Небольшое дело").setText("закончить программу");
+        epic2.setName("Вторая эпик задача").setText("Описание задачи");
+
+        epic2.setSubTasksIds(List.of(subTask4.id));
+        subTask4.setEpicId(epic2.id);
 
         // Изменяем статусы созданных объектов и печатаем их
         SubTask st1 = tm.getEpicSubTasks(epic1.id).get(0);
@@ -460,21 +477,39 @@ public class Tests {
         tm.setHistoryManager(hm);
 
         // Создаём первую эпик задачу
-        String[][] subs1 = { { "Первая подзадача", "Собрать коробки" }, { "Втоаря подзадача", "Упаковать кошку" }
-        , { "Третья подзадача", "Сказать слова прощания" } };
-        Epic epic1 = createEpic(
-                tm,
-                "Переезд",
-                "Перва эпик задача",
-                subs1);
+        SubTask subTask1 = new SubTask();
+        SubTask subTask2 = new SubTask();
+        SubTask subTask3 = new SubTask();
+        Epic epic1 = new Epic();
+
+        tm.addSubTask(subTask1);
+        tm.addSubTask(subTask2);
+        tm.addSubTask(subTask3);
+        tm.addEpic(epic1);
+
+        subTask1.setName("Первая подзадача").setText("Собрать коробки");
+        subTask1.setName("Втоаря подзадача").setText("Упаковать кошку");
+        subTask1.setName("Третья подзадача").setText("Сказать слова прощания");
+        epic1.setName("Переезд").setText("Перва эпик задача");
+
+        epic1.setSubTasksIds(List.of(subTask1.id, subTask2.id, subTask3.id));
+        subTask1.setEpicId(epic1.id);
+        subTask2.setEpicId(epic1.id);
+        subTask3.setEpicId(epic1.id);
 
         // Создаём вторую эпик задачу
-        String[][] subs2 = { { "Небольшое дело", "закончить программу" } };
-        Epic epic2 = createEpic(
-                tm,
-                "Вторая эпик задача",
-                "Описание задачи",
-                subs2);
+        SubTask subTask4 = new SubTask();
+        Epic epic2 = new Epic();
+
+        tm.addSubTask(subTask4);
+        tm.addEpic(epic2);
+
+        subTask4.setName("Небольшое дело").setText("закончить программу");
+        epic2.setName("Вторая эпик задача").setText("Описание задачи");
+
+        epic2.setSubTasksIds(List.of(subTask4.id));
+        subTask4.setEpicId(epic2.id);
+
 
         // Изменяем статусы созданных объектов и печатаем их
         SubTask st1 = tm.getEpicSubTasks(epic1.id).get(0);
