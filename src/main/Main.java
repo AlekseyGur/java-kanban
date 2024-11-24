@@ -1,4 +1,5 @@
-import ru.alexgur.kanban.tests.Tests;
+package main;
+import tests.ru.alexgur.kanban.Tests;
 
 public class Main {
     public static void main(String[] args) {

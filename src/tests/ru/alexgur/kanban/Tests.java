@@ -1,4 +1,4 @@
-package ru.alexgur.kanban.tests;
+package tests.ru.alexgur.kanban;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -7,15 +7,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.alexgur.kanban.model.Epic;
-import ru.alexgur.kanban.model.SubTask;
-import ru.alexgur.kanban.model.Task;
-import ru.alexgur.kanban.service.Status;
-import ru.alexgur.kanban.service.TaskManager;
-import ru.alexgur.kanban.service.HistoryManager;
-import ru.alexgur.kanban.service.Managers;
-
 import org.junit.jupiter.api.Test;
+
+import main.ru.alexgur.kanban.model.Epic;
+import main.ru.alexgur.kanban.model.SubTask;
+import main.ru.alexgur.kanban.model.Task;
+import main.ru.alexgur.kanban.service.HistoryManager;
+import main.ru.alexgur.kanban.service.Managers;
+import main.ru.alexgur.kanban.service.Status;
+import main.ru.alexgur.kanban.service.TaskManager;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 

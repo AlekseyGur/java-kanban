@@ -1,12 +1,13 @@
-package ru.alexgur.kanban.service;
+package main.ru.alexgur.kanban.service;
 
 import java.util.List;
+
+import main.ru.alexgur.kanban.model.Epic;
+import main.ru.alexgur.kanban.model.SubTask;
+import main.ru.alexgur.kanban.model.Task;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import ru.alexgur.kanban.model.Epic;
-import ru.alexgur.kanban.model.SubTask;
-import ru.alexgur.kanban.model.Task;
 
 public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer, Task> tasks = new HashMap<>();
