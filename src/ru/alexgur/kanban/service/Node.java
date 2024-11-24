@@ -1,6 +1,6 @@
-package main.ru.alexgur.kanban.service;
+package ru.alexgur.kanban.service;
 
-import main.ru.alexgur.kanban.model.Task;
+import ru.alexgur.kanban.model.Task;
 
 public class Node {
     private Task task;

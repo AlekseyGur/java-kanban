@@ -1,8 +1,8 @@
-package main.ru.alexgur.kanban.service;
+package ru.alexgur.kanban.service;
 
 import java.util.List;
 
-import main.ru.alexgur.kanban.model.Task;
+import ru.alexgur.kanban.model.Task;
 
 public interface HistoryManager {
 

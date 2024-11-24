@@ -1,4 +1,4 @@
-package main.ru.alexgur.kanban.service;
+package ru.alexgur.kanban.service;
 
 public class Managers {
     public static TaskManager getDefault() {

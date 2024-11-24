@@ -1,6 +1,6 @@
-package main.ru.alexgur.kanban.model;
+package ru.alexgur.kanban.model;
 
-import main.ru.alexgur.kanban.service.Status;
+import ru.alexgur.kanban.service.Status;
 
 public class Task {
     private static int globalId = 0; // значение для генерации id экземпляров

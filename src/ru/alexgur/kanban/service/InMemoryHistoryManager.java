@@ -1,11 +1,11 @@
-package main.ru.alexgur.kanban.service;
+package ru.alexgur.kanban.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import main.ru.alexgur.kanban.model.Task;
+import ru.alexgur.kanban.model.Task;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private Node head;

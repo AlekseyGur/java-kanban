@@ -1,4 +1,4 @@
-package main;
+
 
 import test.ru.alexgur.kanban.Tests;
 

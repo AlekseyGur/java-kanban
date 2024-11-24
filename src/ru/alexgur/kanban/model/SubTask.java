@@ -1,4 +1,4 @@
-package main.ru.alexgur.kanban.model;
+package ru.alexgur.kanban.model;
 
 public class SubTask extends Task {
 
