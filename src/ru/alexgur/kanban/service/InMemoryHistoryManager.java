@@ -12,7 +12,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Node tail;
     private HashMap<Integer, Node> history = new HashMap<>();
 
-    @Override
     public void clear() {
         clearImpl();
     }
@@ -100,4 +99,48 @@ public class InMemoryHistoryManager implements HistoryManager {
         tail = null;
         history.clear();
     }
+
+    private class Node {
+        private Task task;
+        private Node next;
+        private Node prev;
+
+        public Node(Node prev, Task task, Node next) {
+            this.task = task;
+            this.next = next;
+            this.prev = prev;
+        }
+
+        @Override
+        public int hashCode() {
+            return task.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            Node other = (Node) obj;
+            return task.equals(other.task);
+        }
+
+        public Task getTask() {
+            return task;
+        }
+
+        public Node getNext() {
+            return next;
+        }
+
+        public void setNext(Node next) {
+            this.next = next;
+        }
+
+        public Node getPrev() {
+            return prev;
+        }
+
+        public void setPrev(Node prev) {
+            this.prev = prev;
+        }
+    }
+
 }

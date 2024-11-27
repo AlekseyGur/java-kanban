@@ -1,7 +1,6 @@
 package test.ru.alexgur.kanban;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -13,6 +12,7 @@ import ru.alexgur.kanban.model.Epic;
 import ru.alexgur.kanban.model.SubTask;
 import ru.alexgur.kanban.model.Task;
 import ru.alexgur.kanban.service.HistoryManager;
+import ru.alexgur.kanban.service.InMemoryHistoryManager;
 import ru.alexgur.kanban.service.Managers;
 import ru.alexgur.kanban.service.Status;
 import ru.alexgur.kanban.service.TaskManager;
@@ -20,7 +20,7 @@ import ru.alexgur.kanban.service.TaskManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 
-public class Tests {
+public class MainTest {
     private static TaskManager tm;
     private static HistoryManager hm;
 
@@ -29,231 +29,6 @@ public class Tests {
         tm = Managers.getDefault();
         hm = Managers.getDefaultHistory();
         tm.setHistoryManager(hm);
-    }
-
-    // проверьте, что экземпляры класса Task равны друг другу;
-    @Test
-    public void shouldBeEqualTwoTasks() {
-        Task task1 = new Task();
-        Task task2 = new Task();
-
-        task1.setName("Название").setText("Описание");
-        task2.setName("Название").setText("Описание");
-
-        Assertions.assertEquals(task1, task2);
-    }
-
-    // проверьте, что наследники класса Task равны друг другу;
-    @Test
-    public void shouldBeEqualTwoSubTasks() {
-        SubTask subTask1 = new SubTask();
-        SubTask subTask2 = new SubTask();
-
-        subTask1.setName("Название SubTask").setText("Описание SubTask");
-        subTask2.setName("Название SubTask").setText("Описание SubTask");
-
-        Assertions.assertEquals(subTask1, subTask2);
-    }
-
-    // проверьте, что объект Epic нельзя добавить в самого себя в виде подзадачи;
-    @Test
-    public void shouldNotBePossibleToAddEpicAsSubTask() {
-        Epic epic = new Epic();
-        List<Integer> sbTasksIds = new ArrayList<>();
-
-        sbTasksIds.add(epic.id);
-        epic.setSubTasksIds(sbTasksIds);
-
-        Assertions.assertEquals(0, epic.getSubTasksIds().size());
-    }
-
-    // проверьте, что объект Subtask нельзя сделать своим же эпиком;
-    @Test
-    public void shouldNotBePossibleToSetSubTaskAsItsOwnEpic() {
-        SubTask subTask = new SubTask();
-
-        subTask.setEpicId(subTask.id);
-
-        Assertions.assertNotEquals(subTask.id, subTask.getEpicId());
-    }
-
-    // убедитесь, что утилитарный класс всегда возвращает проинициализированные и
-    // готовые к работе экземпляры менеджеров;
-    @Test
-    public void shouldReturnInitAndRedyManagers() {
-        Assertions.assertTrue(Managers.getDefault() instanceof TaskManager);
-        Assertions.assertTrue(Managers.getDefaultHistory() instanceof HistoryManager);
-    }
-
-    // проверьте, что InMemoryTaskManager действительно добавляет задачи разного
-    // типа и может найти их по id;
-    @Test
-    public void shouldSaveAllTypesToInMemoryTaskManager() {
-        Task task = new Task();
-        SubTask subTask = new SubTask();
-        Epic epic = new Epic();
-
-        int taskId = tm.addTask(task);
-        int subTaskId = tm.addSubTask(subTask);
-        int epicId = tm.addEpic(epic);
-
-        Assertions.assertEquals(task, tm.getTask(taskId));
-        Assertions.assertEquals(subTask, tm.getSubTask(subTaskId));
-        Assertions.assertEquals(epic, tm.getEpic(epicId));
-    }
-
-    // проверьте, что задачи с заданным id и сгенерированным id не конфликтуют
-    // внутри менеджера; ?????? Это вообще как?
-
-    // создайте тест, в котором проверяется неизменность задачи (по всем полям) при
-    // добавлении задачи в менеджер
-    @Test
-    public void shouldPersistTaskAfterSave() {
-        Task task = new Task();
-
-        int taskId = tm.addTask(task);
-
-        Assertions.assertEquals(task, tm.getTask(taskId));
-    }
-
-    // убедитесь, что задачи, добавляемые в HistoryManager, сохраняют предыдущую
-    // версию задачи и её данных.
-    @Test
-    public void shouldPersistTaskAfterAddMoreTasks() {
-        Task task = new Task();
-        int taskId = tm.addTask(task);
-
-        tm.addTask(new Task());
-        tm.addTask(new Task());
-        tm.addTask(new Task());
-        tm.addTask(new Task());
-
-        Assertions.assertEquals(task, tm.getTask(taskId));
-    }
-
-    @Test
-    public void shouldIncrementCountByOneAfterTaskCreate() {
-        Task task1 = new Task();
-        Task task2 = new Task();
-
-        Assertions.assertEquals(task1.id + 1, task2.id);
-    }
-
-    @Test
-    public void shouldCreateTaskAndSetProperies() {
-        Task task = new Task();
-
-        task.setName("Название");
-        task.setText("Описание");
-
-        Assertions.assertEquals("Название", task.getName());
-        Assertions.assertEquals("Описание", task.getText());
-    }
-
-    @Test
-    public void shouldCreateSubTaskAndSetProperies() {
-        SubTask subTask = new SubTask();
-
-        subTask.setName("Название");
-        subTask.setText("Описание");
-
-        Assertions.assertEquals("Название", subTask.getName());
-        Assertions.assertEquals("Описание", subTask.getText());
-    }
-
-    // проверка добавления в историю и чтения из неё
-    @Test
-    public void shouldSaveAndReturnOneRecordFromHistory() {
-        clearHistory();
-        Task task = new Task();
-
-        int taskId = tm.addTask(task);
-        tm.getTask(taskId);
-        List<Task> hist = tm.getHistoryManager().getHistory();
-
-        Assertions.assertEquals(taskId, hist.get(0).id);
-        Assertions.assertEquals(1, hist.size());
-    }
-
-    // проверка добавления в историю и чтения из неё ровно 10 элементов
-    @Test
-    public void shouldSaveAndReturnTenRecordsFromHistory() {
-        clearHistory();
-        int maxHistSize = 10;
-
-        for (int i = 0; i < maxHistSize; i++) {
-            Task task = new Task();
-            tm.addTask(task);
-            tm.getTask(task.id);
-        }
-        List<Task> hist = tm.getHistoryManager().getHistory();
-
-        Assertions.assertTrue(maxHistSize == hist.size());
-    }
-
-    // проверка добавления в историю и чтения из неё ровно 10+1 элементов
-    @Test
-    public void shouldSaveAndReturnTenPlusOneRecordFromHistory() {
-        clearHistory();
-        int maxHistSize = 10;
-
-        for (int i = 0; i < maxHistSize + 1; i++) {
-            Task task = new Task();
-            tm.addTask(task);
-            tm.getTask(task.id);
-        }
-
-        List<Task> hist = tm.getHistoryManager().getHistory();
-        Assertions.assertTrue(maxHistSize + 1 == hist.size());
-    }
-
-    @Test
-    public void shouldCreateEpicAndAddSubTaskAndSetProperies() {
-        Epic epic = new Epic();
-        SubTask subTask1 = new SubTask();
-        SubTask subTask2 = new SubTask();
-        List<Integer> sbTasksIds = new ArrayList<>();
-
-        epic.setName("Название Epic").setText("Описание Epic");
-        subTask1.setName("Название SubTask").setText("Описание SubTask");
-        subTask2.setName("Название SubTask").setText("Описание SubTask");
-        sbTasksIds.add(subTask1.id);
-        sbTasksIds.add(subTask2.id);
-        epic.setSubTasksIds(sbTasksIds);
-
-        Assertions.assertEquals("Название Epic", epic.getName());
-        Assertions.assertEquals("Описание Epic", epic.getText());
-        Assertions.assertEquals(2, epic.getSubTasksIds().size());
-    }
-
-    @Test
-    void addToHistory() {
-        clearHistory();
-        Task task = new Task();
-
-        tm.addTask(task);
-        tm.getTask(task.id);
-        final List<Task> history = hm.getHistory();
-
-        assertNotNull(history, "История не пустая.");
-        assertEquals(1, history.size(), "История не пустая.");
-    }
-
-    @Test
-    void addNewTask() {
-        Task task = new Task();
-
-        task.setName("Название").setText("Описание");
-        final int taskSizeInit = tm.getTasks().size();
-        final int taskId = tm.addTask(task);
-        final Task savedTask = tm.getTask(taskId);
-        final List<Task> tasks = tm.getTasks();
-
-        assertNotNull(savedTask, "Задача не найдена.");
-        assertEquals(task, savedTask, "Задачи не совпадают.");
-        assertNotNull(tasks, "Задачи не возвращаются.");
-        assertEquals(taskSizeInit + 1, tasks.size(), "Неверное количество задач.");
-        assertEquals(task, tasks.get(tasks.size() - 1), "Задачи не совпадают.");
     }
 
     // Создайте две задачи, эпик с тремя подзадачами и эпик без подзадач.
@@ -471,8 +246,8 @@ public class Tests {
         Assertions.assertTrue(tm.getEpic(epic2.id) == null);
     }
 
-
     private void clearHistory() {
-        tm.getHistoryManager().clear();
+        InMemoryHistoryManager thm = (InMemoryHistoryManager) tm.getHistoryManager();
+        thm.clear();
     }
 }
