@@ -1,16 +1,15 @@
 package ru.alexgur.kanban.service;
 
 import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import ru.alexgur.kanban.model.Epic;
 import ru.alexgur.kanban.model.SubTask;
 import ru.alexgur.kanban.model.Task;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class InMemoryTaskManager implements TaskManager {
-    
-    // Ключ хеша совпадает с Task.id, используется для быстрого поиска
     private HashMap<Integer, Task> tasks = new HashMap<>();
     private HashMap<Integer, SubTask> subTasks = new HashMap<>();
     private HashMap<Integer, Epic> epics = new HashMap<>();
@@ -169,12 +168,12 @@ public class InMemoryTaskManager implements TaskManager {
 
         Status newStatus;
         if (isNew) {
+            // все подзадачи имеют статус NEW или их нет
             newStatus = Status.NEW;
-        } // все подзадачи имеют статус NEW или их нет
-        else if (isDone) {
+        } else if (isDone) {
+            // все подзадачи имеют DONE
             newStatus = Status.DONE;
-        } // все подзадачи имеют DONE
-        else {
+        } else {
             newStatus = Status.IN_PROGRESS;
         }
 
