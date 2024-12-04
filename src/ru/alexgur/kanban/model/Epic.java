@@ -2,7 +2,7 @@ package ru.alexgur.kanban.model;
 
 import java.util.List;
 
-import ru.alexgur.kanban.service.TaskType; 
+import ru.alexgur.kanban.service.TaskType;
 
 import java.util.ArrayList;
 

@@ -145,7 +145,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private void save() {
-        if (fileToSave == null){
+        if (fileToSave == null) {
             return;
         }
 
@@ -153,7 +153,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             try (FileWriter fileWriter = new FileWriter(fileToSave)) {
                 String csvHeader = "id,type,name,status,description,epic";
                 fileWriter.write(csvHeader + eol);
-    
+
                 for (List<? extends Task> target : List.of(getTasks(), getSubTasks(), getEpics())) {
                     for (Task task : target) {
                         fileWriter.write(toString(task));
