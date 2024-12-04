@@ -17,6 +17,9 @@ public class Task {
 
     public Task(int id) {
         this.status = Status.NEW;
+        if (globalId < id) {
+            globalId = id;
+        }
         this.id = id;
     }
 
