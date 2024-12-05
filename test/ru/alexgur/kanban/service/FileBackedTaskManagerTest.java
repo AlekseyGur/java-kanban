@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.ArrayList;
 
 import ru.alexgur.kanban.model.SubTask;
+import ru.alexgur.kanban.exceptions.ManageLoadException;
 import ru.alexgur.kanban.model.Epic;
 import ru.alexgur.kanban.model.Task;
 import ru.alexgur.kanban.service.HistoryManager;
-import ru.alexgur.kanban.service.ManageLoadException;
 import ru.alexgur.kanban.service.FileBackedTaskManager;
 
 import java.io.File;
@@ -81,7 +81,6 @@ public class FileBackedTaskManagerTest {
                 if (line.startsWith("id") || line.isEmpty()) {
                     continue;
                 }
-                System.out.println(line);
                 lines.add(line);
             }
         } catch (IOException e) {

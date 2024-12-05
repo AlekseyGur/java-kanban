@@ -2,6 +2,8 @@ package ru.alexgur.kanban.service;
 
 import java.util.List;
 
+import ru.alexgur.kanban.exceptions.ManageLoadException;
+import ru.alexgur.kanban.exceptions.ManagerSaveException;
 import ru.alexgur.kanban.model.Epic;
 import ru.alexgur.kanban.model.SubTask;
 import ru.alexgur.kanban.model.Task;
@@ -115,7 +117,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         this.csvSplitter = csvSplitter;
     }
 
-    public static FileBackedTaskManager loadFromFile(File file) throws ManageLoadException {
+    public static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager taskManager = new FileBackedTaskManager();
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
@@ -149,21 +151,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             return;
         }
 
-        try {
-            try (FileWriter fileWriter = new FileWriter(fileToSave)) {
-                String csvHeader = "id,type,name,status,description,epic";
-                fileWriter.write(csvHeader + eol);
+        try (FileWriter fileWriter = new FileWriter(fileToSave)) {
+            String csvHeader = "id,type,name,status,description,epic";
+            fileWriter.write(csvHeader + eol);
 
-                for (List<? extends Task> target : List.of(getTasks(), getSubTasks(), getEpics())) {
-                    for (Task task : target) {
-                        fileWriter.write(toString(task));
-                    }
+            for (List<? extends Task> target : List.of(getTasks(), getSubTasks(), getEpics())) {
+                for (Task task : target) {
+                    fileWriter.write(toString(task));
                 }
-            } catch (IOException e) {
-                throw new ManagerSaveException("Произошла ошибка во время записи файла.");
             }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (IOException e) {
+            throw new ManagerSaveException("Произошла ошибка во время записи файла.");
         }
     }
 
