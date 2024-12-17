@@ -86,5 +86,5 @@ public class TaskTest {
 
         Assertions.assertEquals(subTask1, subTask2);
     }
- 
+
 }

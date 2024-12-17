@@ -1,6 +1,7 @@
 package ru.alexgur.kanban.model;
 
 import ru.alexgur.kanban.service.Status;
+import ru.alexgur.kanban.service.TaskType;
 
 public class Task {
     private static int globalId = 0; // значение для генерации id экземпляров
@@ -12,6 +13,18 @@ public class Task {
     public Task() {
         this.status = Status.NEW;
         id = ++globalId;
+    }
+
+    public Task(int id) {
+        this.status = Status.NEW;
+        if (globalId < id) {
+            globalId = id;
+        }
+        this.id = id;
+    }
+
+    public TaskType getType() {
+        return TaskType.TASK;
     }
 
     public int getId() {

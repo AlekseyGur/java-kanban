@@ -1,11 +1,21 @@
 package ru.alexgur.kanban.model;
 
 import java.util.List;
+
+import ru.alexgur.kanban.service.TaskType;
+
 import java.util.ArrayList;
 
 public class Epic extends Task {
-
     private List<Integer> subTasksIds = new ArrayList<>();
+
+    public Epic() {
+        super();
+    }
+
+    public Epic(int id) {
+        super(id);
+    }
 
     public List<Integer> getSubTasksIds() {
         return subTasksIds;
@@ -27,6 +37,11 @@ public class Epic extends Task {
 
     public void deleteSubTask(Integer subTasksId) {
         subTasksIds.remove(subTasksId);
+    }
+
+    @Override
+    public TaskType getType() {
+        return TaskType.EPIC;
     }
 
     @Override
