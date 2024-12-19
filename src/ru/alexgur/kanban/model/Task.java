@@ -15,7 +15,7 @@ public class Task {
     private Status status; // статус задачи
     private Duration duration = Duration.ZERO; // продолжительность задачи в минутах
     private LocalDateTime startTime; // дата и время старта выполнения задачи
-    public static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public LocalDateTime getStartTime() {
         return startTime;
@@ -136,7 +136,7 @@ public class Task {
     public String toString() {
         String start = "";
         if (getStartTime() != null) {
-            start = getStartTime().format(DATE_TIME_FORMATTER);
+            start = getStartTime().format(dateTimeFormatter);
         }
 
         long durationStr = 0;

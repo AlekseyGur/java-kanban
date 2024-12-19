@@ -18,7 +18,7 @@ import java.time.format.DateTimeFormatter;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private File fileToSave;
-    private DateTimeFormatter DATE_TIME_FORMATTER = Task.DATE_TIME_FORMATTER;
+    private DateTimeFormatter DATE_TIME_FORMATTER = Task.dateTimeFormatter;
     private String eol = "\n";
     private String csvSplitter = ";";
 

@@ -58,7 +58,7 @@ public class Epic extends Task {
     public String toString() {
         String start = "";
         if (getStartTime() != null) {
-            start = getStartTime().format(DATE_TIME_FORMATTER);
+            start = getStartTime().format(dateTimeFormatter);
         }
 
         long durationStr = 0;

@@ -239,10 +239,10 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
         Task task3 = new Task();
         Task task4 = new Task();
 
-        task1.setStartTime(LocalDateTime.parse("2024-12-10 09:18:32", Task.DATE_TIME_FORMATTER));
-        task2.setStartTime(LocalDateTime.parse("2024-12-10 09:18:32", Task.DATE_TIME_FORMATTER));
-        task3.setStartTime(LocalDateTime.parse("2024-12-10 09:18:41", Task.DATE_TIME_FORMATTER));
-        task4.setStartTime(LocalDateTime.parse("2024-12-10 09:19:42", Task.DATE_TIME_FORMATTER));
+        task1.setStartTime(LocalDateTime.parse("2024-12-10 09:18:32", Task.dateTimeFormatter));
+        task2.setStartTime(LocalDateTime.parse("2024-12-10 09:18:32", Task.dateTimeFormatter));
+        task3.setStartTime(LocalDateTime.parse("2024-12-10 09:18:41", Task.dateTimeFormatter));
+        task4.setStartTime(LocalDateTime.parse("2024-12-10 09:19:42", Task.dateTimeFormatter));
 
         task1.setDuration(Duration.ofSeconds(10));
         task2.setDuration(Duration.ofSeconds(10));
