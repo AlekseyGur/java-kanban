@@ -28,10 +28,8 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public List<Task> getHistory() {
-        List<Task> listTasks = new ArrayList<>();
-        for (Node node : getTasks()) {
-            listTasks.add(node.getTask());
-        }
+        List<Task> listTasks = getTasks().stream()
+                .map(x -> x.getTask()).toList();
         return listTasks;
     }
 

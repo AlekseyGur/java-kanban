@@ -3,24 +3,9 @@ package test.ru.alexgur.kanban.model;
 import org.junit.jupiter.api.Test;
 
 import ru.alexgur.kanban.model.SubTask;
-import ru.alexgur.kanban.service.HistoryManager;
-import ru.alexgur.kanban.service.Managers;
-import ru.alexgur.kanban.service.TaskManager;
-
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 
 public class SubTaskTest {
-    private static TaskManager tm;
-    private static HistoryManager hm;
-
-    @BeforeAll
-    public static void createTaskManagerAndHistoryManagerVarsSetHistoryManager() {
-        tm = Managers.getDefault();
-        hm = Managers.getDefaultHistory();
-        tm.setHistoryManager(hm);
-    }
-
     @Test
     public void shouldCreateSubTaskAndSetProperies() {
         SubTask subTask = new SubTask();
@@ -40,5 +25,17 @@ public class SubTaskTest {
         subTask.setEpicId(subTask.id);
 
         Assertions.assertNotEquals(subTask.id, subTask.getEpicId());
+    }
+
+    // проверьте, что наследники класса SubTask равны друг другу;
+    @Test
+    public void shouldBeEqualTwoSubTasks() {
+        SubTask subTask1 = new SubTask();
+        SubTask subTask2 = new SubTask();
+
+        subTask1.setName("Название SubTask").setText("Описание SubTask");
+        subTask2.setName("Название SubTask").setText("Описание SubTask");
+
+        Assertions.assertEquals(subTask1, subTask2);
     }
 }

@@ -4,10 +4,12 @@ import java.util.List;
 
 import ru.alexgur.kanban.service.TaskType;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Epic extends Task {
     private List<Integer> subTasksIds = new ArrayList<>();
+    private LocalDateTime endTime; // дата и время завершения всех задач
 
     public Epic() {
         super();
@@ -19,6 +21,14 @@ public class Epic extends Task {
 
     public List<Integer> getSubTasksIds() {
         return subTasksIds;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     public void setSubTasksIds(List<Integer> subTasksIds) {
@@ -46,8 +56,24 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "Task [id=" + id + ", name=" + getName() + ", text=" + getText() + ", status=" + getStatus()
-                + ", subTasksIds=" + subTasksIds + "]";
-    }
+        String start = "";
+        if (getStartTime() != null) {
+            start = getStartTime().format(dateTimeFormatter);
+        }
 
+        long durationStr = 0;
+        if (getDuration().isZero()) {
+            durationStr = getDuration().toMinutes();
+        }
+
+        return "Task [id=" + id +
+                ", type=" + getType() +
+                ", name=" + getName() +
+                ", text=" + getText() +
+                ", status=" + getStatus() +
+                ", startTime=" + start +
+                ", duration=" + durationStr +
+                ", subTasksIds=" + subTasksIds +
+                "]";
+    }
 }
