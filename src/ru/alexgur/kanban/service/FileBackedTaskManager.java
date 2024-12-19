@@ -12,9 +12,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private File fileToSave;
+    private DateTimeFormatter DATE_TIME_FORMATTER = Task.DATE_TIME_FORMATTER;
     private String eol = "\n";
     private String csvSplitter = ";";
 
@@ -142,6 +146,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
 
         taskManager.updateEpicsSubTasksIds();
+        taskManager.updateEpicsDurationStartEndTime();
         taskManager.setFile(file);
         return taskManager;
     }
@@ -152,7 +157,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
 
         try (FileWriter fileWriter = new FileWriter(fileToSave)) {
-            String csvHeader = "id,type,name,status,description,epic";
+            String csvHeader = "id,type,name,description,status,start,duration,epic";
             fileWriter.write(csvHeader + eol);
 
             for (List<? extends Task> target : List.of(getTasks(), getSubTasks(), getEpics())) {
@@ -170,15 +175,30 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         if (task instanceof SubTask) {
             epicId = String.valueOf(((SubTask) task).getEpicId());
         }
+
+        String start = "";
+        if (task.getStartTime() != null) {
+            start = task.getStartTime().format(DATE_TIME_FORMATTER);
+        }
+
+        long duration = 0;
+        if (task.getDuration().isZero()) {
+            duration = task.getDuration().toMinutes();
+        }
+
         return task.id
                 + csvSplitter
                 + task.getType()
                 + csvSplitter
                 + task.getName()
                 + csvSplitter
+                + task.getText()
+                + csvSplitter
                 + task.getStatus()
                 + csvSplitter
-                + task.getText()
+                + start
+                + csvSplitter
+                + duration
                 + csvSplitter
                 + epicId
                 + csvSplitter
@@ -190,25 +210,36 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         int id = Integer.valueOf(args[0]);
         TaskType type = TaskType.valueOf(args[1]);
-        Status status = Status.valueOf(args[3]);
         String name = args[2];
-        String text = args[4];
+        String text = args[3];
+        Status status = Status.valueOf(args[4]);
+        LocalDateTime startTime = LocalDateTime.parse(args[5], DATE_TIME_FORMATTER);
+        int durationMinutes = Integer.valueOf(args[6]);
 
         switch (type) {
             case TASK:
                 Task task = new Task(id);
-                task.setName(name).setText(text).setStatus(status);
+                task.setName(name)
+                        .setText(text)
+                        .setStatus(status)
+                        .setStartTime(startTime)
+                        .setDuration(Duration.ofMinutes(durationMinutes));
                 return task;
             case SUBTASK:
-                int epicId = Integer.valueOf(args[5]);
+                int epicId = Integer.valueOf(args[7]);
 
                 SubTask subTask = new SubTask(id);
-                subTask.setName(name).setText(text).setStatus(status);
-                subTask.setEpicId(epicId);
+                subTask.setEpicId(epicId)
+                        .setName(name)
+                        .setText(text)
+                        .setStatus(status)
+                        .setStartTime(startTime)
+                        .setDuration(Duration.ofMinutes(durationMinutes));
                 return subTask;
             case EPIC:
                 Epic epic = new Epic(id);
-                epic.setName(name).setText(text);
+                epic.setName(name)
+                        .setText(text);
                 return epic;
         }
         return null;
