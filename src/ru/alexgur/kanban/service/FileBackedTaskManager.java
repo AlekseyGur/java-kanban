@@ -18,7 +18,7 @@ import java.time.format.DateTimeFormatter;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private File fileToSave;
-    private DateTimeFormatter DATE_TIME_FORMATTER = Task.dateTimeFormatter;
+    private DateTimeFormatter dateTimeFormatter = Task.dateTimeFormatter;
     private String eol = "\n";
     private String csvSplitter = ";";
 
@@ -178,7 +178,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         String start = "";
         if (task.getStartTime() != null) {
-            start = task.getStartTime().format(DATE_TIME_FORMATTER);
+            start = task.getStartTime().format(dateTimeFormatter);
         }
 
         long duration = 0;
@@ -213,7 +213,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String name = args[2];
         String text = args[3];
         Status status = Status.valueOf(args[4]);
-        LocalDateTime startTime = LocalDateTime.parse(args[5], DATE_TIME_FORMATTER);
+        LocalDateTime startTime = LocalDateTime.parse(args[5], dateTimeFormatter);
         int durationMinutes = Integer.valueOf(args[6]);
 
         switch (type) {
