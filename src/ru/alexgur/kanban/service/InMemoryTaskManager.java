@@ -3,7 +3,6 @@ package ru.alexgur.kanban.service;
 import java.util.List;
 import java.util.Objects;
 import java.util.TreeSet;
-import java.util.stream.Stream;
 
 import ru.alexgur.kanban.exceptions.ManagerAddTaskException;
 import ru.alexgur.kanban.model.Epic;
@@ -42,6 +41,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int addSubTask(SubTask subtask) {
+        if (isTaskCrossesSavedTasks(subtask)) {
+            throw new ManagerAddTaskException("Подзадача пересекается с другими по времени!");
+        }
         subTasks.put(subtask.id, subtask);
         updateEpicStatus(subtask.getEpicId());
         addTreeOfTasksAndSubTasks(subtask);
@@ -57,12 +59,18 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task task) {
+        if (isTaskCrossesSavedTasks(task)) {
+            throw new ManagerAddTaskException("Задача пересекается с другими по времени!");
+        }
         updateTreeOfTasksAndSubTasks(task);
         tasks.put(task.id, task);
     }
 
     @Override
     public void updateSubTask(SubTask subtask) {
+        if (isTaskCrossesSavedTasks(subtask)) {
+            throw new ManagerAddTaskException("Подзадача пересекается с другими по времени!");
+        }
         updateTreeOfTasksAndSubTasks(subtask);
         subTasks.put(subtask.id, subtask);
         updateEpicStatus(subtask.getEpicId());
@@ -151,8 +159,12 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteEpics() {
         epics.clear();
         subTasks.clear();
-
         deleteTypeFromTreeOfTasksAndSubTasks(TaskType.SUBTASK);
+    }
+
+    @Override
+    public List<Task> getPrioritizedTasks() {
+        return new ArrayList<>(treeOfTasksAndSubTasks);
     }
 
     public void updateEpicsSubTasksIds() {
@@ -166,13 +178,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     public void updateEpicsDurationStartEndTime() {
         epics.values().forEach(x -> setEpicDurationStartEndTime(x));
-    }
-
-    public List<Task> getPrioritizedTasks() {
-        return Stream.concat(getTasks().stream(), getSubTasks().stream())
-                .filter(x -> x.getStartTime() == null)
-                .sorted(Task::compareToStartTimeAsc)
-                .toList();
     }
 
     private List<Epic> getEpicsImpl() {
@@ -209,12 +214,18 @@ public class InMemoryTaskManager implements TaskManager {
                 .min(LocalDateTime::compareTo)
                 .orElse(null);
 
-        if (duration.isZero()) {
+        LocalDateTime endTime = subtasks.stream()
+                .map(x -> x.getEndTime())
+                .filter(Objects::nonNull)
+                .max(LocalDateTime::compareTo)
+                .orElse(null);
+
+        if (!duration.isZero()) {
             epic.setDuration(duration);
         }
         if (startTime != null) {
             epic.setStartTime(startTime);
-            epic.setEndTime(epic.getStartTime().plus(duration));
+            epic.setEndTime(endTime);
         }
     }
 
@@ -292,7 +303,8 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private void addTreeOfTasksAndSubTasks(Task task) {
-        if (!task.getDuration().isZero() &&
+        if (task != null &&
+                !task.getDuration().isZero() &&
                 task.getStartTime() != null &&
                 task.getEndTime() != null) {
             treeOfTasksAndSubTasks.add(task);
@@ -304,6 +316,9 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private <T extends Task> void updateTreeOfTasksAndSubTasks(T task) {
+        if (task == null) {
+            return;
+        }
         Task el = (task.getType() == TaskType.TASK ? tasks : subTasks).get(task.id);
         removeTreeOfTasksAndSubTasks(el);
         addTreeOfTasksAndSubTasks(task);
@@ -313,9 +328,9 @@ public class InMemoryTaskManager implements TaskManager {
         return treeOfTasksAndSubTasks.stream().filter(x -> x.getType() != type).toList();
     }
 
-    public <T extends Task> boolean isTaskCrossesSavedTasks(T a) {
-        final LocalDateTime end = a.getEndTime();
-        final LocalDateTime start = a.getStartTime();
+    public <T extends Task> boolean isTaskCrossesSavedTasks(T task) {
+        final LocalDateTime end = task.getEndTime();
+        final LocalDateTime start = task.getStartTime();
 
         if (end == null || start == null) {
             return false;

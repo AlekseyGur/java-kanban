@@ -123,7 +123,18 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         getEpics();
     }
 
+    @Test
+    public void testGetPrioritizedTasks() {
+        getPrioritizedTasks();
+    }
+
+    @Test
+    public void testSetEpicDurationStartEndTime() {
+        setEpicDurationStartEndTime();
+    }
+
     // Уникальные методы этого класса
+
     @Test
     public void shouldSaveAndLoadFromEmptyCSVFile() {
         // сохранение и загрузку пустого файла;

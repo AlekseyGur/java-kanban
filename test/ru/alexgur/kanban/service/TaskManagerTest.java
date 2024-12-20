@@ -13,6 +13,8 @@ import ru.alexgur.kanban.model.SubTask;
 import ru.alexgur.kanban.model.Task;
 import ru.alexgur.kanban.service.HistoryManager;
 import ru.alexgur.kanban.service.TaskManager;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public abstract class TaskManagerTest<T extends TaskManager> {
     protected T taskManager;
@@ -222,7 +224,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         SubTask subTask2 = new SubTask();
 
         epic.setSubTasksIds(List.of(subTask1.id, subTask2.id));
-        
+
         subTask1.setEpicId(epic.id);
         subTask2.setEpicId(epic.id);
 
@@ -330,5 +332,67 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         assertEquals(size, 2, "Список Epic задач не дополняется");
         assertEquals(task1, savedEpic1, "Задача Epic1 не совпадает с сохранённой");
         assertEquals(task2, savedEpic2, "Задача Epic2 не совпадает с сохранённой");
+    }
+
+    // List<Task> getPrioritizedTasks();
+    @Test
+    public void getPrioritizedTasks() {
+        Task task1 = new Task();
+        Task task2 = new Task();
+        SubTask task3 = new SubTask();
+
+        task1.setDuration(Duration.ofSeconds(60))
+                .setStartTime(LocalDateTime.parse("2024-08-17 01:32:21",
+                        Task.dateTimeFormatter));
+        task2.setDuration(Duration.ofSeconds(60))
+                .setStartTime(LocalDateTime.parse("2024-08-17 03:32:21",
+                        Task.dateTimeFormatter));
+        task3.setDuration(Duration.ofSeconds(60))
+                .setStartTime(LocalDateTime.parse("2024-08-17 02:32:21",
+                        Task.dateTimeFormatter));
+
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
+        taskManager.addTask(task3);
+
+        List<Task> tasks = taskManager.getPrioritizedTasks();
+        int size = tasks.size();
+        assertEquals(size, 3, "Приоритетные задачи не добавляются");
+        assertEquals(task1, tasks.get(0), "Приоритетные задачи не сортируются по времени");
+        assertEquals(task3, tasks.get(1), "Приоритетные задачи не сортируются по времени");
+        assertEquals(task2, tasks.get(2), "Приоритетные задачи не сортируются по времени");
+    }
+
+    @Test
+    public void setEpicDurationStartEndTime() {
+        Epic epic = new Epic();
+        SubTask subTask1 = new SubTask();
+        SubTask subTask2 = new SubTask();
+
+        subTask1.setStartTime(LocalDateTime.parse("2024-12-10 09:00:00", Task.dateTimeFormatter));
+        subTask2.setStartTime(LocalDateTime.parse("2024-12-10 09:00:30", Task.dateTimeFormatter));
+
+        subTask1.setDuration(Duration.ofSeconds(10));
+        subTask2.setDuration(Duration.ofSeconds(10));
+
+        epic.setSubTasksIds(List.of(subTask1.id, subTask2.id));
+
+        subTask1.setEpicId(epic.id);
+        subTask2.setEpicId(epic.id);
+
+        taskManager.addSubTask(subTask1);
+        taskManager.addSubTask(subTask2);
+        int epicId = taskManager.addEpic(epic);
+
+        Epic savedEpic = taskManager.getEpic(epicId);
+
+        // Продолжительность эпика — сумма продолжительностей всех его подзадач.
+        Assertions.assertEquals(savedEpic.getDuration(), subTask1.getDuration().plus(subTask2.getDuration()));
+
+        // Время начала — дата старта самой ранней подзадачи,
+        Assertions.assertEquals(savedEpic.getStartTime(), subTask1.getStartTime());
+
+        // а время завершения — время окончания самой поздней из задач.
+        Assertions.assertEquals(savedEpic.getEndTime(), subTask2.getEndTime());
     }
 }

@@ -122,6 +122,16 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
         getEpics();
     }
 
+    @Test
+    public void testGetPrioritizedTasks() {
+        getPrioritizedTasks();
+    }
+
+    @Test
+    public void testSetEpicDurationStartEndTime() {
+        setEpicDurationStartEndTime();
+    }
+
     // Уникальные методы этого класса
 
     // тест, в котором проверяется неизменность задачи (по всем полям) при
@@ -235,23 +245,40 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
     public void shouldThrowExceptionIfCrossInterval() {
         // c. Добавить тест на корректность расчёта пересечения интервалов.
         Task task1 = new Task();
-        Task task2 = new Task();
+        SubTask task2 = new SubTask();
         Task task3 = new Task();
         Task task4 = new Task();
+        SubTask task5 = new SubTask();
+        Task task6 = new Task();
 
         task1.setStartTime(LocalDateTime.parse("2024-12-10 09:18:32", Task.dateTimeFormatter));
         task2.setStartTime(LocalDateTime.parse("2024-12-10 09:18:32", Task.dateTimeFormatter));
         task3.setStartTime(LocalDateTime.parse("2024-12-10 09:18:41", Task.dateTimeFormatter));
         task4.setStartTime(LocalDateTime.parse("2024-12-10 09:19:42", Task.dateTimeFormatter));
+        task5.setStartTime(LocalDateTime.parse("2024-12-10 02:02:42", Task.dateTimeFormatter));
+        task6.setStartTime(LocalDateTime.parse("2024-12-10 02:02:42", Task.dateTimeFormatter));
 
         task1.setDuration(Duration.ofSeconds(10));
         task2.setDuration(Duration.ofSeconds(10));
         task3.setDuration(Duration.ofSeconds(10));
         task4.setDuration(Duration.ofSeconds(10));
+        task5.setDuration(Duration.ofSeconds(10));
+        task6.setDuration(Duration.ofSeconds(10));
 
         Assertions.assertDoesNotThrow(() -> taskManager.addTask(task1));
-        Assertions.assertThrows(ManagerAddTaskException.class, () -> taskManager.addTask(task2));
+        Assertions.assertThrows(ManagerAddTaskException.class, () -> taskManager.addSubTask(task2));
         Assertions.assertThrows(ManagerAddTaskException.class, () -> taskManager.addTask(task3));
         Assertions.assertDoesNotThrow(() -> taskManager.addTask(task4));
+
+        Assertions.assertThrows(ManagerAddTaskException.class, () -> {
+            task1.setStartTime(LocalDateTime.parse("2024-12-10 09:19:42", Task.dateTimeFormatter));
+            taskManager.updateTask(task1);
+        });
+
+        Assertions.assertThrows(ManagerAddTaskException.class, () -> {
+            task1.setStartTime(LocalDateTime.parse("2024-12-10 13:56:12", Task.dateTimeFormatter));
+            taskManager.updateTask(task1);
+        });
+
     }
 }
