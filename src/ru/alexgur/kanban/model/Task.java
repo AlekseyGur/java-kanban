@@ -1,5 +1,9 @@
 package ru.alexgur.kanban.model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import ru.alexgur.kanban.service.Status;
 import ru.alexgur.kanban.service.TaskType;
 
@@ -9,6 +13,34 @@ public class Task {
     private String name; // название задачи
     private String text; // текст задачи
     private Status status; // статус задачи
+    private Duration duration = Duration.ZERO; // продолжительность задачи в минутах
+    private LocalDateTime startTime; // дата и время старта выполнения задачи
+    public static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public Task setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+        return this;
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (getStartTime() == null) {
+            return null;
+        }
+        return startTime.plus(duration);
+    }
+
+    public Task setDuration(Duration duration) {
+        this.duration = duration;
+        return this;
+    }
 
     public Task() {
         this.status = Status.NEW;
@@ -51,6 +83,10 @@ public class Task {
 
     public String getText() {
         return text;
+    }
+
+    public static <T extends Task> int compareToStartTimeAsc(T a, T b) {
+        return a.getStartTime().isBefore(b.getStartTime()) ? -1 : 1;
     }
 
     public Task setText(String text) {
@@ -98,6 +134,23 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task [id=" + id + ", name=" + getName() + ", text=" + getText() + ", status=" + getStatus() + "]";
+        String start = "";
+        if (getStartTime() != null) {
+            start = getStartTime().format(dateTimeFormatter);
+        }
+
+        long durationStr = 0;
+        if (getDuration().isZero()) {
+            durationStr = getDuration().toMinutes();
+        }
+
+        return "Task [id=" + id +
+                ", type=" + getType() +
+                ", name=" + getName() +
+                ", text=" + getText() +
+                ", status=" + getStatus() +
+                ", startTime=" + start +
+                ", duration=" + durationStr +
+                "]";
     }
 }
