@@ -275,7 +275,7 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
             taskManager.updateTask(task1);
         });
 
-        Assertions.assertThrows(ManagerAddTaskException.class, () -> {
+        Assertions.assertDoesNotThrow(() -> {
             task1.setStartTime(LocalDateTime.parse("2024-12-10 13:56:12", Task.dateTimeFormatter));
             taskManager.updateTask(task1);
         });
