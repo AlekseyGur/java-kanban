@@ -1,4 +1,4 @@
-package ru.alexgur.kanban.adapters;
+package test.ru.alexgur.kanban.adapters;
 
 import com.google.gson.reflect.TypeToken;
 import java.util.List;

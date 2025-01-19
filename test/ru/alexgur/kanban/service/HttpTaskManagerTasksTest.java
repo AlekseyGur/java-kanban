@@ -1,8 +1,7 @@
 package test.ru.alexgur.kanban.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.net.URI;
@@ -19,42 +18,46 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 
-import ru.alexgur.kanban.adapters.EpicListTypeToken;
+import test.ru.alexgur.kanban.adapters.EpicListTypeToken;
+import test.ru.alexgur.kanban.adapters.SubTaskListTypeToken;
+import test.ru.alexgur.kanban.adapters.TaskListTypeToken;
+
 import ru.alexgur.kanban.adapters.EpicTypeToken;
-import ru.alexgur.kanban.adapters.SubTaskListTypeToken;
 import ru.alexgur.kanban.adapters.SubTaskTypeToken;
-import ru.alexgur.kanban.adapters.TaskListTypeToken;
 import ru.alexgur.kanban.adapters.TaskTypeToken;
 
 import ru.alexgur.kanban.model.Epic;
 import ru.alexgur.kanban.model.SubTask;
 import ru.alexgur.kanban.model.Task;
-
+import ru.alexgur.kanban.service.HistoryManager;
 import ru.alexgur.kanban.service.HttpTaskServer;
 import ru.alexgur.kanban.service.InMemoryHistoryManager;
-import ru.alexgur.kanban.service.InMemoryTaskManager;
+import ru.alexgur.kanban.service.Managers;
 import ru.alexgur.kanban.service.Status;
 import ru.alexgur.kanban.service.TaskManager;
+import ru.alexgur.kanban.service.handlers.BaseHttpHandler;
 
 public class HttpTaskManagerTasksTest {
-    TaskManager taskManager = new InMemoryTaskManager();
-    HttpTaskServer taskServer = new HttpTaskServer(taskManager);
-    Gson gson = HttpTaskServer.getGson();
-
-    public HttpTaskManagerTasksTest() throws IOException {
-    }
+    TaskManager taskManager;
+    HistoryManager historyManager;
+    HttpTaskServer taskServer = new HttpTaskServer();
+    Gson gson = BaseHttpHandler.getGson();
 
     @BeforeEach
-    public void setUp() {
+    public void cleanUpManager() {
+        taskManager = Managers.getDefault();
+        historyManager = Managers.getDefaultHistory();
+        taskManager.setHistoryManager(historyManager);
+        taskServer.start(taskManager);
+
         taskManager.deleteTasks();
         taskManager.deleteSubTasks();
         taskManager.deleteEpics();
-        HttpTaskServer.start();
     }
 
     @AfterEach
-    public void shutDown() {
-        HttpTaskServer.stop();
+    public void shutDownServer() {
+        taskServer.stop();
     }
 
     @Test
@@ -83,10 +86,10 @@ public class HttpTaskManagerTasksTest {
 
         List<Task> parsed = gson.fromJson(response.body(), new TaskListTypeToken().getType());
 
-        assertTrue("Задачи не возвращаются", parsed.size() > 0);
-        assertTrue("Некорректное количество задач", parsed.size() == 2);
-        assertTrue("Некорректное имя задачи", parsed.get(0).getName().equals("Test 1"));
-        assertTrue("Задачи не совпадают", parsed.get(0).equals(task1));
+        assertTrue(parsed.size() > 0, "Задачи не возвращаются");
+        assertTrue(parsed.size() == 2, "Некорректное количество задач");
+        assertTrue(parsed.get(0).getName().equals("Test 1"), "Некорректное имя задачи");
+        assertTrue(parsed.get(0).equals(task1), "Задачи не совпадают");
     }
 
     @Test
@@ -106,8 +109,8 @@ public class HttpTaskManagerTasksTest {
 
         Task parsed = gson.fromJson(response.body(), new TaskTypeToken().getType());
 
-        assertTrue("Некорректное имя задачи", parsed.getName().equals("Test 2"));
-        assertTrue("Задачи не совпадают", parsed.equals(task2));
+        assertTrue(parsed.getName().equals("Test 2"), "Некорректное имя задачи");
+        assertTrue(parsed.equals(task2), "Задачи не совпадают");
     }
 
     @Test
@@ -129,10 +132,10 @@ public class HttpTaskManagerTasksTest {
         List<Task> tasksFromManager = taskManager.getTasks();
         Task savedTask = tasksFromManager.get(0);
 
-        assertTrue("Задачи не возвращаются", tasksFromManager.size() > 0);
-        assertTrue("Некорректное количество задач", tasksFromManager.size() == 1);
-        assertTrue("Некорректное имя задачи", savedTask.getName().equals("Test 2"));
-        assertTrue("Задачи не совпадают", savedTask.equals(task));
+        assertTrue(tasksFromManager.size() > 0, "Задачи не возвращаются");
+        assertTrue(tasksFromManager.size() == 1, "Некорректное количество задач");
+        assertTrue(savedTask.getName().equals("Test 2"), "Некорректное имя задачи");
+        assertTrue(savedTask.equals(task), "Задачи не совпадают");
     }
 
     @Test
@@ -157,10 +160,10 @@ public class HttpTaskManagerTasksTest {
         List<Task> tasksFromManager = taskManager.getTasks();
         Task savedTask = tasksFromManager.get(0);
 
-        assertTrue("Задачи не возвращаются", tasksFromManager.size() > 0);
-        assertTrue("Некорректное количество задач", tasksFromManager.size() == 1);
-        assertTrue("Некорректное имя задачи", savedTask.getName().equals("Test 3"));
-        assertTrue("Задачи не совпадают", savedTask.equals(task2));
+        assertTrue(tasksFromManager.size() > 0, "Задачи не возвращаются");
+        assertTrue(tasksFromManager.size() == 1, "Некорректное количество задач");
+        assertTrue(savedTask.getName().equals("Test 3"), "Некорректное имя задачи");
+        assertTrue(savedTask.equals(task2), "Задачи не совпадают");
     }
 
     @Test
@@ -189,10 +192,10 @@ public class HttpTaskManagerTasksTest {
 
         List<Task> parsed = taskManager.getTasks();
 
-        assertTrue("Задачи не возвращаются", parsed.size() > 0);
-        assertTrue("Некорректное количество задач", parsed.size() == 1);
-        assertTrue("Некорректное имя задачи", parsed.get(0).getName().equals("Test 2"));
-        assertTrue("Задачи не совпадают", parsed.get(0).equals(task2));
+        assertTrue(parsed.size() > 0, "Задачи не возвращаются");
+        assertTrue(parsed.size() == 1, "Некорректное количество задач");
+        assertTrue(parsed.get(0).getName().equals("Test 2"), "Некорректное имя задачи");
+        assertTrue(parsed.get(0).equals(task2), "Задачи не совпадают");
     }
 
     @Test
@@ -221,10 +224,10 @@ public class HttpTaskManagerTasksTest {
 
         List<SubTask> parsed = gson.fromJson(response.body(), new SubTaskListTypeToken().getType());
 
-        assertTrue("Задачи не возвращаются", parsed.size() > 0);
-        assertTrue("Некорректное количество задач", parsed.size() == 2);
-        assertTrue("Некорректное имя задачи", parsed.get(0).getName().equals("Test 1"));
-        assertTrue("Задачи не совпадают", parsed.get(0).equals(task1));
+        assertTrue(parsed.size() > 0, "Задачи не возвращаются");
+        assertTrue(parsed.size() == 2, "Некорректное количество задач");
+        assertTrue(parsed.get(0).getName().equals("Test 1"), "Некорректное имя задачи");
+        assertTrue(parsed.get(0).equals(task1), "Задачи не совпадают");
     }
 
     @Test
@@ -244,8 +247,8 @@ public class HttpTaskManagerTasksTest {
 
         SubTask parsed = gson.fromJson(response.body(), new SubTaskTypeToken().getType());
 
-        assertTrue("Некорректное имя задачи", parsed.getName().equals("Test 2"));
-        assertTrue("Задачи не совпадают", parsed.equals(task2));
+        assertTrue(parsed.getName().equals("Test 2"), "Некорректное имя задачи");
+        assertTrue(parsed.equals(task2), "Задачи не совпадают");
     }
 
     @Test
@@ -267,10 +270,10 @@ public class HttpTaskManagerTasksTest {
         List<SubTask> tasksFromManager = taskManager.getSubTasks();
         SubTask savedTask = tasksFromManager.get(0);
 
-        assertTrue("Задачи не возвращаются", tasksFromManager.size() > 0);
-        assertTrue("Некорректное количество задач", tasksFromManager.size() == 1);
-        assertTrue("Некорректное имя задачи", savedTask.getName().equals("Test 2"));
-        assertTrue("Задачи не совпадают", savedTask.equals(task));
+        assertTrue(tasksFromManager.size() > 0, "Задачи не возвращаются");
+        assertTrue(tasksFromManager.size() == 1, "Некорректное количество задач");
+        assertTrue(savedTask.getName().equals("Test 2"), "Некорректное имя задачи");
+        assertTrue(savedTask.equals(task), "Задачи не совпадают");
     }
 
     @Test
@@ -295,10 +298,10 @@ public class HttpTaskManagerTasksTest {
         List<SubTask> tasksFromManager = taskManager.getSubTasks();
         SubTask savedTask = tasksFromManager.get(0);
 
-        assertTrue("Задачи не возвращаются", tasksFromManager.size() > 0);
-        assertTrue("Некорректное количество задач", tasksFromManager.size() == 1);
-        assertTrue("Некорректное имя задачи", savedTask.getName().equals("Test 3"));
-        assertTrue("Задачи не совпадают", savedTask.equals(task2));
+        assertTrue(tasksFromManager.size() > 0, "Задачи не возвращаются");
+        assertTrue(tasksFromManager.size() == 1, "Некорректное количество задач");
+        assertTrue(savedTask.getName().equals("Test 3"), "Некорректное имя задачи");
+        assertTrue(savedTask.equals(task2), "Задачи не совпадают");
     }
 
     @Test
@@ -326,10 +329,10 @@ public class HttpTaskManagerTasksTest {
 
         List<SubTask> parsed = taskManager.getSubTasks();
 
-        assertTrue("Задачи не возвращаются", parsed.size() > 0);
-        assertTrue("Некорректное количество задач", parsed.size() == 1);
-        assertTrue("Некорректное имя задачи", parsed.get(0).getName().equals("Test 2"));
-        assertTrue("Задачи не совпадают", parsed.get(0).equals(task2));
+        assertTrue(parsed.size() > 0, "Задачи не возвращаются");
+        assertTrue(parsed.size() == 1, "Некорректное количество задач");
+        assertTrue(parsed.get(0).getName().equals("Test 2"), "Некорректное имя задачи");
+        assertTrue(parsed.get(0).equals(task2), "Задачи не совпадают");
     }
 
     @Test
@@ -354,10 +357,10 @@ public class HttpTaskManagerTasksTest {
 
         List<Epic> parsed = gson.fromJson(response.body(), new EpicListTypeToken().getType());
 
-        assertTrue("Задачи не возвращаются", parsed.size() > 0);
-        assertTrue("Некорректное количество задач", parsed.size() == 2);
-        assertTrue("Некорректное имя задачи", parsed.get(0).getName().equals("Test 1"));
-        assertTrue("Задачи не совпадают", parsed.get(0).equals(task1));
+        assertTrue(parsed.size() > 0, "Задачи не возвращаются");
+        assertTrue(parsed.size() == 2, "Некорректное количество задач");
+        assertTrue(parsed.get(0).getName().equals("Test 1"), "Некорректное имя задачи");
+        assertTrue(parsed.get(0).equals(task1), "Задачи не совпадают");
     }
 
     @Test
@@ -375,8 +378,8 @@ public class HttpTaskManagerTasksTest {
 
         Epic parsed = gson.fromJson(response.body(), new EpicTypeToken().getType());
 
-        assertTrue("Некорректное имя задачи", parsed.getName().equals("Test 2"));
-        assertTrue("Задачи не совпадают", parsed.equals(task2));
+        assertTrue(parsed.getName().equals("Test 2"), "Некорректное имя задачи");
+        assertTrue(parsed.equals(task2), "Задачи не совпадают");
     }
 
     @Test
@@ -396,10 +399,10 @@ public class HttpTaskManagerTasksTest {
         List<Epic> tasksFromManager = taskManager.getEpics();
         Epic savedTask = tasksFromManager.get(0);
 
-        assertTrue("Задачи не возвращаются", tasksFromManager.size() > 0);
-        assertTrue("Некорректное количество задач", tasksFromManager.size() == 1);
-        assertTrue("Некорректное имя задачи", savedTask.getName().equals("Test 2"));
-        assertTrue("Задачи не совпадают", savedTask.equals(task));
+        assertTrue(tasksFromManager.size() > 0, "Задачи не возвращаются");
+        assertTrue(tasksFromManager.size() == 1, "Некорректное количество задач");
+        assertTrue(savedTask.getName().equals("Test 2"), "Некорректное имя задачи");
+        assertTrue(savedTask.equals(task), "Задачи не совпадают");
     }
 
     @Test
@@ -420,10 +423,10 @@ public class HttpTaskManagerTasksTest {
         List<Epic> tasksFromManager = taskManager.getEpics();
         Epic savedTask = tasksFromManager.get(0);
 
-        assertTrue("Задачи не возвращаются", tasksFromManager.size() > 0);
-        assertTrue("Некорректное количество задач", tasksFromManager.size() == 1);
-        assertTrue("Некорректное имя задачи", savedTask.getName().equals("Test 3"));
-        assertTrue("Задачи не совпадают", savedTask.equals(task2));
+        assertTrue(tasksFromManager.size() > 0, "Задачи не возвращаются");
+        assertTrue(tasksFromManager.size() == 1, "Некорректное количество задач");
+        assertTrue(savedTask.getName().equals("Test 3"), "Некорректное имя задачи");
+        assertTrue(savedTask.equals(task2), "Задачи не совпадают");
     }
 
     @Test
@@ -446,10 +449,10 @@ public class HttpTaskManagerTasksTest {
 
         List<Epic> parsed = taskManager.getEpics();
 
-        assertTrue("Задачи не возвращаются", parsed.size() > 0);
-        assertTrue("Некорректное количество задач", parsed.size() == 1);
-        assertTrue("Некорректное имя задачи", parsed.get(0).getName().equals("Test 2"));
-        assertTrue("Задачи не совпадают", parsed.get(0).equals(task2));
+        assertTrue(parsed.size() > 0, "Задачи не возвращаются");
+        assertTrue(parsed.size() == 1, "Некорректное количество задач");
+        assertTrue(parsed.get(0).getName().equals("Test 2"), "Некорректное имя задачи");
+        assertTrue(parsed.get(0).equals(task2), "Задачи не совпадают");
     }
 
     @Test
@@ -476,11 +479,11 @@ public class HttpTaskManagerTasksTest {
 
         List<SubTask> parsed = gson.fromJson(response.body(), new SubTaskListTypeToken().getType());
 
-        assertTrue("Задачи не возвращаются", parsed.size() > 0);
-        assertTrue("Некорректное количество задач", parsed.size() == 2);
-        assertTrue("Некорректное имя задачи", parsed.get(0).getName().equals("SubTask 1"));
-        assertTrue("Задача 1 не совпадает", parsed.get(0).equals(subTask1));
-        assertTrue("Задача 2 не совпадает", parsed.get(1).equals(subTask2));
+        assertTrue(parsed.size() > 0, "Задачи не возвращаются");
+        assertTrue(parsed.size() == 2, "Некорректное количество задач");
+        assertTrue(parsed.get(0).getName().equals("SubTask 1"), "Некорректное имя задачи");
+        assertTrue(parsed.get(0).equals(subTask1), "Задача 1 не совпадает");
+        assertTrue(parsed.get(1).equals(subTask2), "Задача 2 не совпадает");
     }
 
     @Test
@@ -501,14 +504,15 @@ public class HttpTaskManagerTasksTest {
 
         List<Task> parsed = gson.fromJson(response.body(), new TaskListTypeToken().getType());
 
-        assertTrue("Задачи не возвращаются", parsed.size() > 0);
-        assertTrue("Некорректное количество задач", parsed.size() == maxHistSize);
-        assertTrue("Некорректное имя задачи", parsed.get(0).getName().equals("Task " + maxHistSize));
-        assertTrue("Задача 1 не совпадает", savedHist.get(0).equals(parsed.get(0)));
+        assertTrue(parsed.size() > 0, "Задачи не возвращаются");
+        assertTrue(parsed.size() == maxHistSize, "Некорректное количество задач");
+        assertTrue(parsed.get(0).getName().equals("Task " + maxHistSize), "Некорректное имя задачи");
+        assertTrue(savedHist.get(0).equals(parsed.get(0)), "Задача 1 не совпадает");
     }
 
     @Test
     public void testGetPrioritized() throws IOException, InterruptedException {
+        clearHistory();
         Task task1 = new Task();
         Task task2 = new Task();
         SubTask task3 = new SubTask();
