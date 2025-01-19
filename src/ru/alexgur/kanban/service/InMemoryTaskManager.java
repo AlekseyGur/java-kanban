@@ -331,6 +331,7 @@ public class InMemoryTaskManager implements TaskManager {
     public <T extends Task> boolean isTaskCrossesSavedTasks(T task) {
         final LocalDateTime end = task.getEndTime();
         final LocalDateTime start = task.getStartTime();
+        final int id = task.getId();
 
         if (end == null || start == null) {
             return false;
@@ -338,6 +339,9 @@ public class InMemoryTaskManager implements TaskManager {
 
         return treeOfTasksAndSubTasks.stream()
                 .anyMatch(x -> {
+                    if (id == x.id)
+                        return false;
+
                     LocalDateTime thisStart = x.getStartTime();
                     LocalDateTime thisEnd = x.getEndTime();
 
